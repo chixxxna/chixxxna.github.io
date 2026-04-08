@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>提瓦特生日指南</title>
     <style>
         /* ====================== 全局CSS变量定义 ====================== */
@@ -21,7 +21,6 @@
             --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
             --nav-text-color: #E2E8F0;
         }
-
         /* ====================== 全局基础样式重置 ====================== */
         * {
             margin: 0;
@@ -29,7 +28,9 @@
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-
+        html {
+            overflow-x: hidden;
+        }
         body {
             background-color: var(--bg-main);
             color: var(--text-main);
@@ -39,18 +40,17 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
         /* ====================== 汉堡按钮样式 ====================== */
         .hamburger-btn {
             position: fixed;
             top: 1rem;
             left: 1rem;
             z-index: 9999;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             background: rgba(18, 24, 38, 0.9);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
             border: 1px solid rgba(138, 92, 246, 0.4);
             border-radius: 12px;
             padding: 0;
@@ -65,36 +65,31 @@
             visibility: visible;
             transform: translateX(0);
             pointer-events: auto;
+            touch-action: manipulation;
         }
-
         .hamburger-btn:hover {
             transform: scale(1.05);
             border-color: rgba(138, 92, 246, 0.7);
             box-shadow: 0 6px 16px rgba(138, 92, 246, 0.2);
         }
-
         .hamburger-btn:active {
             transform: scale(0.98);
             transition: all 0.1s ease;
         }
-
         .hamburger-btn.hidden {
             opacity: 0;
             visibility: hidden;
             transform: translateX(-10px);
             pointer-events: none;
         }
-
         .hamburger-btn svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
         }
-
         .hamburger-btn svg line {
             stroke-linecap: round;
             transition: var(--transition);
         }
-
         /* ====================== 左侧侧边栏导航样式 ====================== */
         .sidebar {
             position: fixed;
@@ -103,23 +98,23 @@
             width: 260px;
             height: 100vh;
             background: var(--bg-sidebar);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             border-right: 1px solid var(--border-color);
             padding: 2rem 0;
             display: flex;
             flex-direction: column;
             z-index: 999;
             transition: var(--transition);
+            overflow: hidden;
         }
-
         .sidebar-logo {
             text-align: center;
             padding: 0 1rem 2rem;
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 1rem;
+            flex-shrink: 0;
         }
-
         .sidebar-logo h2 {
             font-size: 1.4rem;
             font-weight: 600;
@@ -127,7 +122,6 @@
             text-shadow: 0 0 10px rgba(138, 92, 246, 0.4);
             letter-spacing: -0.01em;
         }
-
         .nav-list {
             flex: 1;
             overflow-y: auto;
@@ -135,8 +129,17 @@
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(138, 92, 246, 0.3) transparent;
         }
-
+        .nav-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .nav-list::-webkit-scrollbar-thumb {
+            background-color: rgba(138, 92, 246, 0.3);
+            border-radius: 2px;
+        }
         .nav-item {
             display: flex;
             align-items: center;
@@ -151,16 +154,15 @@
             font-weight: 500;
             line-height: 1.4;
             letter-spacing: -0.01em;
-            min-height: 44px;
+            min-height: 48px;
+            touch-action: manipulation;
         }
-
         .nav-item:hover {
             background: var(--hover-bg);
             color: var(--text-main);
             transform: translateX(4px);
             border-color: rgba(138, 92, 246, 0.15);
         }
-
         .nav-item.active {
             background: var(--primary-color);
             color: #ffffff;
@@ -168,14 +170,12 @@
             box-shadow: 0 0 15px rgba(var(--primary-rgb), 0.35);
             font-weight: 600;
         }
-
         .nav-item .icon {
             font-size: 1.2rem;
             width: 24px;
             text-align: center;
             flex-shrink: 0;
         }
-
         .sidebar-footer {
             padding: 1.5rem 1rem 0;
             border-top: 1px solid var(--border-color);
@@ -183,30 +183,30 @@
             font-size: 0.8rem;
             color: var(--text-secondary);
             opacity: 0.7;
+            flex-shrink: 0;
         }
-
         /* ====================== 右侧主内容区样式 ====================== */
         .main-container {
             margin-left: 260px;
             min-height: 100vh;
             padding: 2rem;
             transition: var(--transition);
+            max-width: var(--container-max-width);
+            margin-left: 260px;
+            margin-right: auto;
+            width: calc(100% - 260px);
         }
-
         .page-panel {
             display: none;
             animation: fadeIn 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
-
         .page-panel.active {
             display: block;
         }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
         /* ====================== 主页角色区样式 ====================== */
         .home-hero {
             min-height: 40vh;
@@ -223,9 +223,8 @@
             background-image: radial-gradient(circle at 50% 50%, rgba(138, 92, 246, 0.18) 0%, transparent 70%);
             backdrop-filter: blur(10px);
         }
-
         .home-hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-size: clamp(2.2rem, 5vw, 4rem);
             background: linear-gradient(90deg, #8A5CF6, #42B3BD, #E6C07A);
             -webkit-background-clip: text;
             background-clip: text;
@@ -233,27 +232,27 @@
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
             font-weight: 700;
+            line-height: 1.2;
         }
-
         .home-hero p {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2vw, 1.2rem);
             color: var(--text-secondary);
             max-width: 700px;
             margin-bottom: 1rem;
             font-weight: 400;
+            line-height: 1.6;
         }
-
         /* ====================== 板块通用标题样式 ====================== */
         .section-title {
-            font-size: 1.6rem;
+            font-size: clamp(1.3rem, 3vw, 1.6rem);
             margin-bottom: 1.5rem;
             padding-left: 1rem;
             border-left: 4px solid var(--primary-color);
             color: var(--text-main);
             font-weight: 600;
             letter-spacing: -0.01em;
+            line-height: 1.4;
         }
-
         /* ====================== 空状态提示样式 ====================== */
         .empty-tip {
             text-align: center;
@@ -264,16 +263,16 @@
             border-radius: 16px;
             border: 1px solid var(--border-color);
             backdrop-filter: blur(10px);
+            line-height: 1.6;
         }
-
         /* ====================== 角色卡片通用样式 ====================== */
-        .card-grid {
+        .card-grid, .nation-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 4rem;
+            width: 100%;
         }
-
         .original-card {
             margin: 0 auto;
             width: 100%;
@@ -290,8 +289,9 @@
             transition: transform 0.3s ease;
             will-change: transform;
             transform: translateZ(0);
+            display: flex;
+            flex-direction: column;
         }
-
         .original-card img {
             margin: 8px auto;
             width: 100%;
@@ -301,77 +301,70 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             image-rendering: -webkit-optimize-contrast;
+            /* 防止图片拉伸 */
+            flex-shrink: 0;
         }
-
         .original-card h3 {
             margin: 14px 0 10px;
-            font-size: 1.4em;
+            font-size: clamp(1.1em, 2vw, 1.4em);
             color: #f1f5f9;
             font-weight: 600;
             letter-spacing: -0.01em;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
         .countdown-label {
-            font-size: 14px;
+            font-size: clamp(12px, 1.5vw, 14px);
             opacity: 0.8;
             margin: 4px 0;
             color: #cbd5e1;
+            line-height: 1.4;
         }
-
         .countdown-time {
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: clamp(1em, 2vw, 1.1em);
             margin: 2px 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: clip;
             color: #f1f5f9;
+            line-height: 1.4;
         }
-
         .today-card .countdown-time {
             color: #ff6b6b;
-            font-size: 1.2em;
+            font-size: clamp(1.1em, 2.2vw, 1.2em);
         }
-
         /* ====================== 地区页面通用样式 ====================== */
         .nation-header {
             text-align: center;
             margin-bottom: 20px;
         }
-
         .nation-title {
-            font-size: 2.4em;
+            font-size: clamp(1.8em, 4vw, 2.4em);
             margin: 0;
             color: #ffffff;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
             font-weight: 700;
             letter-spacing: -0.02em;
+            line-height: 1.3;
         }
-
         .time-display {
-            font-size: 1.1em;
+            font-size: clamp(0.9em, 1.8vw, 1.1em);
             opacity: 0.8;
             margin-top: 8px;
             color: var(--text-secondary);
+            line-height: 1.4;
         }
-
-        .nation-grid {
-            max-width: 100%;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            padding: 0 10px;
-            margin: 0 auto;
-        }
-
         .nation-footer {
             text-align: center;
             margin-top: 50px;
             opacity: 0.6;
             font-size: 14px;
             color: var(--text-secondary);
+            line-height: 1.4;
         }
-
         /* ====================== 全局页脚样式 ====================== */
         footer {
             text-align: center;
@@ -381,9 +374,20 @@
             margin-top: 4rem;
             border-top: 1px solid var(--border-color);
             color: var(--text-secondary);
+            line-height: 1.4;
         }
-
         /* ====================== 响应式适配 ====================== */
+        @media (min-width: 1600px) {
+            :root {
+                --container-max-width: 1600px;
+            }
+            .card-grid, .nation-grid {
+                gap: 2rem;
+            }
+            .original-card {
+                padding: 16px;
+            }
+        }
         @media (max-width: 1024px) {
             .hamburger-btn {
                 display: flex;
@@ -396,30 +400,104 @@
             }
             .main-container {
                 margin-left: 0;
-                padding: 5rem 1rem 2rem;
+                margin-right: 0;
+                width: 100%;
+                padding: 5rem var(--safe-padding) 2rem;
             }
             .home-hero {
-                padding: 2rem 1rem;
+                padding: 2rem 1.5rem;
                 min-height: 30vh;
             }
             .card-grid, .nation-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.2rem;
+                margin-bottom: 3rem;
+            }
+            .original-card {
+                padding: 10px;
             }
         }
-
-        @media (max-width: 768px) {
+        @media (max-width: 576px) {
+            :root {
+                --safe-padding: 0.75rem;
+            }
+            .main-container {
+                padding: 4.5rem var(--safe-padding) 1.5rem;
+            }
+            .home-hero {
+                padding: 1.5rem 1rem;
+                border-radius: 16px;
+                margin-bottom: 2rem;
+            }
+            .section-title {
+                margin-bottom: 1rem;
+                padding-left: 0.75rem;
+            }
             .card-grid, .nation-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
+                gap: 0.8rem;
+                margin-bottom: 2.5rem;
             }
-            .home-hero h1 {
-                font-size: 2.2rem;
+            .original-card {
+                padding: 8px;
+                border-radius: 12px;
+            }
+            .original-card img {
+                border-radius: 8px;
+                margin: 4px auto;
+            }
+            .original-card h3 {
+                margin: 10px 0 6px;
+            }
+            .empty-tip {
+                padding: 2rem 1rem;
+                border-radius: 12px;
+            }
+            footer {
+                padding: 1.5rem;
+                margin-top: 3rem;
+            }
+        }
+        @media (max-width: 360px) {
+            .hamburger-btn {
+                width: 44px;
+                height: 44px;
+                top: 0.75rem;
+                left: 0.75rem;
+            }
+            .main-container {
+                padding: 4rem var(--safe-padding) 1rem;
+            }
+            .card-grid, .nation-grid {
+                gap: 0.6rem;
+            }
+            .original-card {
+                padding: 6px;
+            }
+        }
+        @media (max-height: 500px) and (orientation: landscape) {
+            .sidebar {
+                padding: 1rem 0;
+            }
+            .sidebar-logo {
+                padding: 0 1rem 1rem;
+                margin-bottom: 0.5rem;
+            }
+            .nav-item {
+                min-height: 40px;
+                padding: 0.6rem 0.9rem;
+            }
+            .main-container {
+                padding: 4rem 1rem 1.5rem;
+            }
+            .home-hero {
+                min-height: 25vh;
+                padding: 1.5rem 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 移动端汉堡菜单按钮 -->
     <button class="hamburger-btn" id="hamburgerBtn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -427,8 +505,6 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
     </button>
-
-    <!-- 左侧侧边栏导航容器 -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <h2>提瓦特生日指南</h2>
@@ -443,10 +519,7 @@
             <p>© 2026 by chixxxna</p>
         </div>
     </aside>
-
-    <!-- 右侧主内容容器 -->
     <main class="main-container">
-        <!-- 主页面板 -->
         <section class="page-panel active" id="home-panel">
             <div class="home-hero">
                 <h1>提瓦特生日倒计时</h1>
@@ -462,8 +535,6 @@
                 <div class="card-grid" id="upcomingBirthdayGrid"></div>
             </div>
         </section>
-
-        <!-- 蒙德地区面板 -->
         <section class="page-panel" id="mondstadt-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -473,8 +544,6 @@
                 <div class="nation-grid" id="mondstadt-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 璃月地区面板 -->
         <section class="page-panel" id="liyue-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -484,8 +553,6 @@
                 <div class="nation-grid" id="liyue-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 稻妻地区面板 -->
         <section class="page-panel" id="inazuma-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -495,8 +562,6 @@
                 <div class="nation-grid" id="inazuma-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 须弥地区面板 -->
         <section class="page-panel" id="sumeru-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -506,8 +571,6 @@
                 <div class="nation-grid" id="sumeru-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 枫丹地区面板 -->
         <section class="page-panel" id="fontaine-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -517,8 +580,6 @@
                 <div class="nation-grid" id="fontaine-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 纳塔地区面板 -->
         <section class="page-panel" id="natlan-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -528,8 +589,6 @@
                 <div class="nation-grid" id="natlan-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 至冬地区面板 -->
         <section class="page-panel" id="snezhnaya-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -539,8 +598,6 @@
                 <div class="nation-grid" id="snezhnaya-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 挪德卡莱地区面板 -->
         <section class="page-panel" id="nodkrai-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -550,8 +607,6 @@
                 <div class="nation-grid" id="nodkrai-characterGrid"></div>
             </div>
         </section>
-
-        <!-- 世界之外面板 -->
         <section class="page-panel" id="beyondtheworld-panel">
             <div class="nation-container">
                 <div class="nation-header">
@@ -562,10 +617,7 @@
             </div>
         </section>
     </main>
-
     <script>
-        // ====================== 全局配置项 ======================
-        // 提瓦特全地区配置，包含名称、路由哈希、主题色、图标
         const nationList = [
             { name: '蒙德', hash: 'mondstadt', bg: '#42B3BD', primary: '#2A939C', icon: '🌬️' },
             { name: '璃月', hash: 'liyue', bg: '#E6C07A', primary: '#B88F46', icon: '💰' },
@@ -577,11 +629,8 @@
             { name: '挪德卡莱', hash: 'nodkrai', bg: '#243655', primary: '#1A2A42', icon: '🌙' },
             { name: '世界之外', hash: 'beyondtheworld', bg: '#161625', primary: '#7C3AED', icon: '🌌' }
         ];
-
-        // 全角色基础数据，可自行扩展完整角色列表
         const allRoleList = [
             // 蒙德 22人
-            { name: '温迪', nation: '蒙德', birthday: '06-16', image: '' },
             { name: '琴', nation: '蒙德', birthday: '03-14', image: '' },
             { name: '安柏', nation: '蒙德', birthday: '08-10', image: '' },
             { name: '丽莎', nation: '蒙德', birthday: '06-09', image: '' },
@@ -589,6 +638,7 @@
             { name: '迪卢克', nation: '蒙德', birthday: '04-30', image: '' },
             { name: '芭芭拉', nation: '蒙德', birthday: '07-05', image: '' },
             { name: '雷泽', nation: '蒙德', birthday: '09-09', image: '' },
+            { name: '温迪', nation: '蒙德', birthday: '06-16', image: '' },
             { name: '可莉', nation: '蒙德', birthday: '07-27', image: '' },
             { name: '班尼特', nation: '蒙德', birthday: '02-29', image: '' },
             { name: '诺艾尔', nation: '蒙德', birthday: '03-21', image: '' },
@@ -686,9 +736,9 @@
             { name: '卡齐娜', nation: '纳塔', birthday: '04-22', image: '' },
             { name: '茜特菈莉', nation: '纳塔', birthday: '01-20', image: '' },
             // 至冬 3人
+            { name: '莉奈娅', nation: '至冬', birthday: '05-23', image: '' },
             { name: '达达利亚', nation: '至冬', birthday: '07-20', image: '' },
             { name: '阿蕾奇诺', nation: '至冬', birthday: '08-22', image: '' },
-            { name: '莉奈娅', nation: '至冬', birthday: '05-23', image: '' },
             // 挪德卡莱 8人
             { name: '哥伦比娅', nation: '挪德卡莱', birthday: '01-14', image: '' },
             { name: '菲林斯', nation: '挪德卡莱', birthday: '10-31', image: '' },
@@ -698,21 +748,12 @@
             { name: '奈芙尔', nation: '挪德卡莱', birthday: '05-09', image: '' },
             { name: '雅珂达', nation: '挪德卡莱', birthday: '01-05', image: '' },
             { name: '叶洛亚', nation: '挪德卡莱', birthday: '12-23', image: '' },
-            // 世界之外 3人
-            { name: '派蒙', nation: '世界之外', birthday: '06-01', image: '' },
+            // 世界之外 2人
             { name: '埃洛伊', nation: '世界之外', birthday: '04-04', image: '' },
             { name: '丝柯克', nation: '世界之外', birthday: '11-05', image: '' }
         ];
-
-        // 记录主页上次渲染日期，用于跨天自动刷新数据
         let lastHomeRenderDate = new Date().toDateString();
-
-        // ====================== 通用工具函数 ======================
-        /**
-         * 格式化日期为中文完整时间格式
-         * @param {Date} date - 待格式化的日期对象
-         * @returns {string} 格式化后的时间字符串，包含年月日、星期、时分秒
-         */
+        
         function formatTime(date) {
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
@@ -724,21 +765,11 @@
             const weekday = weekdays[date.getDay()];
             return `${year}年${month}月${day}日 ${weekday} ${hour}:${minute}:${second}`;
         }
-
-        /**
-         * 判断指定年份是否为闰年
-         * @param {number} year - 待判断的年份
-         * @returns {boolean} 是闰年返回true，否则返回false
-         */
+        
         function isLeapYear(year) {
             return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
         }
-
-        /**
-         * 计算生日倒计时核心函数，兼容2月29日闰年特殊情况
-         * @param {string} birthdayStr - 生日字符串，格式为MM-DD
-         * @returns {object} 包含倒计时天数、是否当天、是否15天内、倒计时文本、生日日期、下次生日日期对象
-         */
+        
         function getCountdownDetail(birthdayStr) {
             const [bMonth, bDay] = birthdayStr.split('-').map(Number);
             const now = new Date();
@@ -747,15 +778,13 @@
             const todayDay = now.getDate();
             let nextBirthday;
             let isBirthdayToday = false;
-
-            // 当天生日判断，兼容2月29日闰年场景
+            
             if (bMonth === 2 && bDay === 29) {
                 isBirthdayToday = (todayMonth === 2 && todayDay === 29);
             } else {
                 isBirthdayToday = (bMonth === todayMonth && bDay === todayDay);
             }
-
-            // 2月29日闰年生日特殊处理
+            
             if (bMonth === 2 && bDay === 29) {
                 if (isBirthdayToday) {
                     nextBirthday = new Date(currentYear, 1, 29);
@@ -772,7 +801,6 @@
                     nextBirthday = new Date(nextLeapYear, 1, 29);
                 }
             } else {
-                // 普通生日处理
                 if (isBirthdayToday) {
                     nextBirthday = new Date(currentYear, bMonth - 1, bDay);
                 } else {
@@ -782,14 +810,12 @@
                     }
                 }
             }
-
-            // 计算倒计时差值
+            
             const diffMs = nextBirthday - now;
             const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
             const isToday = isBirthdayToday;
             const isWithin15Days = diffDays <= 15 && diffDays > 0;
-
-            // 生成倒计时文本
+            
             let countdownText;
             if (isToday) {
                 countdownText = "就是今天🎉";
@@ -800,7 +826,7 @@
                 const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
                 countdownText = `${days}天${hours}小时${minutes}分钟${seconds}秒`;
             }
-
+            
             return {
                 days: diffDays,
                 isToday: isToday,
@@ -810,21 +836,12 @@
                 nextBirthday: nextBirthday
             };
         }
-
-        /**
-         * 格式化生日为MM-DD格式，自动补零
-         * @param {string} birthdayStr - 生日字符串，格式为M-D或MM-DD
-         * @returns {string} 格式化后的MM-DD格式字符串
-         */
+        
         function formatBirthdayMMDD(birthdayStr) {
             const [month, day] = birthdayStr.split('-').map(num => num.padStart(2, '0'));
             return `${month}-${day}`;
         }
-
-        /**
-         * 初始化卡片3D悬浮交互效果
-         * @param {string} containerSelector - 容器选择器，限定交互生效范围
-         */
+        
         function initCardInteraction(containerSelector = '') {
             const elements = document.querySelectorAll(`${containerSelector} .original-card, ${containerSelector} .card`);
             const sensitivity = 40;
@@ -857,23 +874,14 @@
                 e.currentTarget.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1.05, 1.05, 1.05)';
             }
         }
-
-        /**
-         * 十六进制颜色转RGB数值对象
-         * @param {string} hex - 十六进制颜色字符串，格式为#xxxxxx
-         * @returns {object} 包含r、g、b三个数值的对象
-         */
+        
         function hexToRgbValues(hex) {
             const r = parseInt(hex.slice(1, 3), 16);
             const g = parseInt(hex.slice(3, 5), 16);
             const b = parseInt(hex.slice(5, 7), 16);
             return { r, g, b };
         }
-
-        /**
-         * 切换全局地区主题色，适配深浅色背景
-         * @param {object|null} nation - 地区配置对象，传null恢复默认主题
-         */
+        
         function setTheme(nation) {
             const root = document.documentElement;
             if (!nation) {
@@ -891,20 +899,17 @@
                 root.style.setProperty('--nav-text-color', '#E2E8F0');
                 return;
             }
-
             const { r, g, b } = hexToRgbValues(nation.bg);
             const primaryRgb = hexToRgbValues(nation.primary);
             const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
             const isLightBackground = luminance > 128;
-
             root.style.setProperty('--primary-color', nation.primary);
             root.style.setProperty('--primary-rgb', `${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}`);
             root.style.setProperty('--bg-main', nation.bg);
             root.style.setProperty('--bg-sidebar', `rgba(${r}, ${g}, ${b}, 0.88)`);
             root.style.setProperty('--bg-card', 'rgba(30, 35, 48, 0.75)');
             root.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.08)');
-
-            // 根据背景亮度自动适配深浅色文字与样式
+            
             if (isLightBackground) {
                 root.style.setProperty('--text-main', '#0f172a');
                 root.style.setProperty('--text-secondary', '#334155');
@@ -925,23 +930,17 @@
                 root.style.setProperty('--shadow', '0 4px 20px rgba(0, 0, 0, 0.3)');
             }
         }
-
-        // ====================== 页面渲染相关函数 ======================
-        /**
-         * 渲染当天过生日的角色板块
-         */
+        
         function renderTodayBirthday() {
             const container = document.getElementById('todayBirthdayGrid');
             const todayRoles = allRoleList.filter(role => {
                 const detail = getCountdownDetail(role.birthday);
                 return detail.isToday;
             });
-
             if (todayRoles.length === 0) {
                 container.innerHTML = '<div class="empty-tip">今天暂无角色过生日，快去看看即将到来的生日吧~</div>';
                 return;
             }
-
             container.innerHTML = '';
             todayRoles.forEach(role => {
                 const formattedBirthday = formatBirthdayMMDD(role.birthday);
@@ -955,13 +954,9 @@
                 `;
                 container.appendChild(card);
             });
-
             initCardInteraction('#todayBirthdayGrid');
         }
-
-        /**
-         * 渲染未来15天内即将过生日的角色板块
-         */
+        
         function renderUpcomingBirthday() {
             const container = document.getElementById('upcomingBirthdayGrid');
             const upcomingRoles = allRoleList.filter(role => {
@@ -970,12 +965,10 @@
             }).sort((a, b) => {
                 return getCountdownDetail(a.birthday).days - getCountdownDetail(b.birthday).days;
             });
-
             if (upcomingRoles.length === 0) {
                 container.innerHTML = '<div class="empty-tip">未来15天暂无角色生日</div>';
                 return;
             }
-
             container.innerHTML = '';
             upcomingRoles.forEach(role => {
                 const formattedBirthday = formatBirthdayMMDD(role.birthday);
@@ -990,13 +983,9 @@
                 `;
                 container.appendChild(card);
             });
-
             initCardInteraction('#upcomingBirthdayGrid');
         }
-
-        /**
-         * 渲染侧边栏导航列表
-         */
+        
         function renderNavList() {
             const navList = document.getElementById('navList');
             nationList.forEach(nation => {
@@ -1010,14 +999,7 @@
                 navList.appendChild(navItem);
             });
         }
-
-        // ====================== 地区模块工厂函数 ======================
-        /**
-         * 创建地区模块，封装对应地区的所有操作
-         * @param {string} nationKey - 地区唯一标识，对应路由hash
-         * @param {array} characters - 该地区的角色列表
-         * @returns {object} 地区模块实例，包含初始化、渲染、更新等方法
-         */
+        
         function createNationModule(nationKey, characters) {
             return {
                 characters: characters,
@@ -1087,8 +1069,7 @@
                 }
             };
         }
-
-        // ====================== 地区模块初始化 ======================
+        
         const mondstadtModule = createNationModule('mondstadt', allRoleList.filter(role => role.nation === '蒙德'));
         const liyueModule = createNationModule('liyue', allRoleList.filter(role => role.nation === '璃月'));
         const inazumaModule = createNationModule('inazuma', allRoleList.filter(role => role.nation === '稻妻'));
@@ -1098,8 +1079,7 @@
         const snezhnayaModule = createNationModule('snezhnaya', allRoleList.filter(role => role.nation === '至冬'));
         const nodkraiModule = createNationModule('nodkrai', allRoleList.filter(role => role.nation === '挪德卡莱'));
         const beyondtheworldModule = createNationModule('beyondtheworld', allRoleList.filter(role => role.nation === '世界之外'));
-
-        // 所有地区模块集合，用于统一管理
+        
         const allModules = {
             mondstadt: mondstadtModule,
             liyue: liyueModule,
@@ -1111,27 +1091,20 @@
             nodkrai: nodkraiModule,
             beyondtheworld: beyondtheworldModule
         };
-
-        // ====================== 路由处理函数 ======================
-        /**
-         * 处理页面路由切换，根据hash值切换对应面板
-         */
+        
         function handleRoute() {
             const hash = window.location.hash.slice(1) || 'home';
             const navItems = document.querySelectorAll('.nav-item');
             const pagePanels = document.querySelectorAll('.page-panel');
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const sidebar = document.getElementById('sidebar');
-
-            // 重置所有激活状态
+            
             navItems.forEach(item => item.classList.remove('active'));
             pagePanels.forEach(panel => panel.classList.remove('active'));
-
-            // 激活对应导航项
+            
             const activeNavItem = document.querySelector(`.nav-item[data-hash="${hash}"]`);
             if (activeNavItem) activeNavItem.classList.add('active');
-
-            // 路由逻辑处理
+            
             if (hash === 'home') {
                 document.getElementById('home-panel').classList.add('active');
                 setTheme(null);
@@ -1150,23 +1123,17 @@
                     window.location.hash = 'home';
                 }
             }
-
-            // 路由切换时自动关闭侧边栏，恢复汉堡按钮显示
+            
             sidebar.classList.remove('open');
             hamburgerBtn.classList.remove('hidden');
         }
-
-        // ====================== 移动端侧边栏交互初始化 ======================
-        /**
-         * 初始化移动端侧边栏与汉堡按钮交互逻辑
-         */
+        
         function initMobileSidebar() {
             const hamburgerBtn = document.getElementById('hamburgerBtn');
             const sidebar = document.getElementById('sidebar');
             const mainContainer = document.querySelector('.main-container');
             const navList = document.getElementById('navList');
-
-            // 汉堡按钮点击切换侧边栏
+            
             hamburgerBtn.addEventListener('click', () => {
                 const isOpen = sidebar.classList.contains('open');
                 if (isOpen) {
@@ -1177,24 +1144,21 @@
                     hamburgerBtn.classList.add('hidden');
                 }
             });
-
-            // 点击导航项自动关闭侧边栏
+            
             navList.addEventListener('click', (e) => {
                 if (e.target.closest('.nav-item') && window.innerWidth <= 1024) {
                     sidebar.classList.remove('open');
                     hamburgerBtn.classList.remove('hidden');
                 }
             });
-
-            // 点击主内容区自动关闭侧边栏
+            
             mainContainer.addEventListener('click', () => {
                 if (sidebar.classList.contains('open') && window.innerWidth <= 1024) {
                     sidebar.classList.remove('open');
                     hamburgerBtn.classList.remove('hidden');
                 }
             });
-
-            // 窗口大小变化适配，处理横竖屏切换
+            
             window.addEventListener('resize', () => {
                 if (window.innerWidth > 1024) {
                     sidebar.classList.remove('open');
@@ -1206,14 +1170,10 @@
                 }
             });
         }
-
-        // ====================== 全局初始化 ======================
-        // 渲染侧边栏导航
+        
         renderNavList();
-        // 初始化移动端侧边栏交互
         initMobileSidebar();
-
-        // 绑定导航点击事件
+        
         document.addEventListener('click', (e) => {
             const navItem = e.target.closest('.nav-item');
             if (navItem) {
@@ -1221,37 +1181,29 @@
                 window.location.hash = hash;
             }
         });
-
-        // 监听hash变化，触发路由切换
+        
         window.addEventListener('hashchange', handleRoute);
-
-        // 页面加载完成后初始化
+        
         window.addEventListener('load', () => {
             handleRoute();
-            // 预加载所有角色图片
             allRoleList.forEach(role => {
                 const img = new Image();
                 img.src = role.image;
             });
         });
-
-        // ====================== 全局定时器 ======================
-        // 每秒更新实时时间与倒计时，跨天自动刷新页面数据
+        
         setInterval(() => {
             const now = new Date();
             const currentDateStr = now.toDateString();
             const formattedTime = formatTime(now);
             
-            // 更新主页实时时间
             const homeTimeEl = document.getElementById('home-realTime');
             if (homeTimeEl) homeTimeEl.textContent = formattedTime;
             
-            // 更新所有地区的实时时间
             Object.values(allModules).forEach(module => {
                 module.updateRealTime();
             });
             
-            // 更新当前激活面板的倒计时
             const activePanel = document.querySelector('.page-panel.active');
             if (activePanel) {
                 if (activePanel.id !== 'home-panel') {
@@ -1272,7 +1224,7 @@
                             card.classList.remove('today-card');
                         }
                     });
-                    // 跨天自动重新渲染主页数据
+                    
                     if (currentDateStr !== lastHomeRenderDate) {
                         renderTodayBirthday();
                         renderUpcomingBirthday();
